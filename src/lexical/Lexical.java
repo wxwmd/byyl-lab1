@@ -186,41 +186,52 @@ public class Lexical {
 
                     // 识别字符常量
 					else if(ch == '\'') {
-                        System.out.println(ch);
-						int state = 0;				        
+						int state = 1;
                         token += ch;                    
-                        while (state != 3) 
-                        {  
-                            i++;
-                            if (i >= strline.length) 
-                            	break;
-                            ch = strline[i]; 
-                            Boolean flag = false;
-                            for (int k = 0; k < 4; k++) 
-                            {  
-                                char tmpstr[] = util.charDFA[state].toCharArray();  
-                                if (util.is_char_state(ch, tmpstr[k])) 
-                                {            
-                                    token += ch;
-                                    state = k; 
-                                    flag = true;
-                                    break;  
-                                }  
-                            }  
-                            if (flag == false)
-                            	break;
+                        i++;
+                        if (i < strline.length){
+                            char ch1 = strline[i];
+                            if (ch1 != '\\'){
+                                token += ch1;
+                                state = 2;
+                                i++;
+                                if (i < strline.length){
+                                    char ch2 = strline[i];
+                                    if (ch2 == '\''){
+                                        token += ch2;
+                                        state = 3;
+                                    }
+                                }
+                            } else { //检测\n,\',\t等字符
+                                token += ch1;
+                                state = 4;
+                                i++;
+                                if (i < strline.length){
+                                    char ch2 = strline[i];
+                                    if (ch2 == '\'' || ch2 == 'n' || ch2 == 't' || ch2 == '\\'){
+                                        token += ch2;
+                                        state = 5;
+                                        i++;
+                                        if (i < strline.length){
+                                            char ch3 = strline[i];
+                                            if (ch3 == '\''){
+                                                token += ch3;
+                                                state = 3;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
-                        if (state != 3) 
-                        {  
+
+                        if (state != 3) {
                         	DefaultTableModel tableModel2 = (DefaultTableModel) jtable2.getModel();
-                            tableModel2.addRow(new Object[] {m+1, token, "字符常量引号未封闭"});
+                            tableModel2.addRow(new Object[] {m+1, token, "字符常量出错"});
                             jtable2.invalidate();
-                            i--;  
-                        } 
-                        else 
-                        {  
-                        	if (constant.isEmpty() || !constant.containsKey(token))
-                        	{  
+                            i--;
+                        }
+                        else {
+                        	if (!constant.containsKey(token)) {
                         		constant.put(token, constant_pos);   
                                 DefaultTableModel tableModel4 = (DefaultTableModel) jtable4.getModel();
                                 tableModel4.addRow(new Object[] {token, constant_pos});

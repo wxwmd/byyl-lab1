@@ -24,7 +24,6 @@ public class Gui extends JFrame {
 		getContentPane().setFont(new Font("宋体", Font.BOLD, 25));
 		
 		setTitle("词法分析GUI");    //设置显示窗口标题
-		System.out.println("汉字");
 		setSize(925,900);    //设置窗口显示尺寸
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);    //置窗口是否可以关闭
 		getContentPane().setLayout(null);

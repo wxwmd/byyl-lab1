@@ -114,35 +114,8 @@ public class util {
             return ch != '\\' && ch != '"';  
         return false;  
     }
-	
-	// char DFA : a代表任意字符，b代表除\和'之外的字符
-	public static String charDFA[] = 
-	{
-		"#\\b#", 
-		"##a#", 
-		"###\'", 
-		"####"
-	}; 
-	
-	/**
-	 * 字符DFA状态匹配函数
-	 * @param ch 当前字符
-	 * @param key 状态表中的字符
-	 * @return 匹配成功返回true，否则返回false 
-	 */
-	public static Boolean is_char_state(char ch, char key) 
-	{  
-        if (key == 'a')  
-            return true;  
-        if (key == '\\')  
-            return ch == key;  
-        if (key == '\'')  
-            return ch == key;  
-        if (key == 'b')  
-            return ch != '\\' && ch != '\'';  
-        return false;  
-    }
-	public static Boolean isEsSt(char ch) 
+
+    public static Boolean isEsSt(char ch)
 	{  
         return ch == 'a' || ch == 'b' || ch == 'f' || ch == 'n' || ch == 'r'  
                 || ch == 't' || ch == 'v' || ch == '?' || ch == '0';  
