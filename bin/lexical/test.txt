@@ -1,0 +1,25 @@
+/*
+hello
+this is correct code
+*/
+int main(){
+    int c_=3;
+
+    float a = 3.22;
+    float b = 2.32e+1;
+
+    String t = "wxw";
+    char s = 'a';
+    char s = '\n';
+}
+
+
+int main(){
+    int 1_c=3;
+    char c = 'ab';
+    String str = "abc;
+}
+/*this is error code*
+
+
+

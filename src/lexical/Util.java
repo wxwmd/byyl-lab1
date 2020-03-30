@@ -3,7 +3,8 @@ package lexical;
 import java.util.HashMap;
 import java.util.Map;
 
-public class util {
+public class Util {
+
     //¹Ø¼ü×Ö
 	public static String keywords[] = { "auto", "double", "int", "struct",  
         "break", "else", "long", "switch", "case", "enum", "register",  

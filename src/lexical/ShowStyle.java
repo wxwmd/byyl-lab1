@@ -12,8 +12,7 @@ import javax.swing.JComponent;
 /**
  * JAVA TextArea行数显示插件
  */
-public class LineNumber extends JComponent 
-{
+public class ShowStyle extends JComponent {
 	private static final long serialVersionUID = 1L;
 	private final  Font DEFAULT_FONT = new Font("Times New Roman", Font.BOLD, 17);
     public final Color DEFAULT_BACKGROUD = new Color(228, 228, 228);
@@ -25,45 +24,37 @@ public class LineNumber extends JComponent
     private int currentRowWidth;
     private FontMetrics fontMetrics;
 
-    public LineNumber() 
-    {
+    public ShowStyle() {
         setFont(DEFAULT_FONT);
         setForeground(DEFAULT_FOREGROUD);
         setBackground(DEFAULT_BACKGROUD);
         setPreferredSize(9999);
     }
 
-    public void setPreferredSize(int row) 
-    {
+    public void setPreferredSize(int row) {
         int width = fontMetrics.stringWidth(String.valueOf(row));
-        if (currentRowWidth < width) 
-        {
+        if (currentRowWidth < width) {
             currentRowWidth = width;
             setPreferredSize(new Dimension(2 * MARGIN + width + 1, nHEIGHT));
         }
     }
 
     @Override
-    public void setFont(Font font) 
-    {
+    public void setFont(Font font) {
         super.setFont(font);
         fontMetrics = getFontMetrics(getFont());
         fontLineHeight = fontMetrics.getHeight();
     }
 
-    public int getLineHeight() 
-    {
-        if (lineHeight == 0) 
-        {
+    public int getLineHeight() {
+        if (lineHeight == 0) {
             return fontLineHeight;
         }
         return lineHeight;
     }
 
-    public void setLineHeight(int lineHeight) 
-    {
-        if (lineHeight > 0) 
-        {
+    public void setLineHeight(int lineHeight) {
+        if (lineHeight > 0) {
             this.lineHeight = lineHeight;
         }
     }
@@ -74,8 +65,7 @@ public class LineNumber extends JComponent
     }
 
     @Override
-    protected void paintComponent(Graphics g) 
-    {
+    protected void paintComponent(Graphics g) {
         int nlineHeight = getLineHeight();
         int startOffset = getStartOffset();
         Rectangle drawHere = g.getClipBounds();
@@ -85,8 +75,7 @@ public class LineNumber extends JComponent
         int startLineNum = (drawHere.y / nlineHeight) + 1;
         int endLineNum = startLineNum + (drawHere.height / nlineHeight);
         int start = (drawHere.y / nlineHeight) * nlineHeight + nlineHeight - startOffset;
-        for (int i = startLineNum; i <= endLineNum; ++i) 
-        {
+        for (int i = startLineNum; i <= endLineNum; ++i) {
             String lineNum = String.valueOf(i);
             int width = fontMetrics.stringWidth(lineNum);
             g.drawString(lineNum + " ", MARGIN + currentRowWidth - width - 1, start);

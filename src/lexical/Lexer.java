@@ -5,22 +5,20 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 
-public class Lexical {
-	private String text;  // 读入的测试样例文本
-	private JTable jtable1;  // 实为Object[][]数组，存储识别信息，即“行数-Token-种别码-单词类别”
-	private JTable jtable2;  // 实为Object[][]数组，存储错误报告，即“行数-错误内容-错误信息”
-	private JTable jtable3;  // Object[][]数组，存储的是标识符表，即“标识符-标识符位置”
-	private JTable jtable4;  // Object[][]数组，存储的是常量表，即“常量-常量位置”
+public class Lexer {
+    // 读入的测试样例文本
+	private String text;
+    // 实为Object[][]数组，存储识别信息，即“行数-Token-种别码-单词类别”
+	private JTable jtable1;
+    // 实为Object[][]数组，存储错误报告，即“行数-错误内容-错误信息”
+	private JTable jtable2;
+    // Object[][]数组，存储的是标识符表，即“标识符-标识符位置”
+	private JTable jtable3;
+    // Object[][]数组，存储的是常量表，即“常量-常量位置”
+	private JTable jtable4;
 	
-	/**
-	 * 构造函数
-	 * @param text String型，读入的测试样例文本
-	 * @param jtable1 实为Object[][]数组，存储识别信息，即“行数-Token-单词类别-种别码”
-	 * @param jtable2 实为Object[][]数组，存储错误报告，即“行数-错误内容-错误信息”
-	 * @param jtable3 实为Object[][]数组，存储的是标识符表，即“标识符-标识符位置”
-	 * @param jtable4 实为Object[][]数组，存储的是常量表，即“常量-常量位置”
-	 */
-	public Lexical(String text, JTable jtable1, JTable jtable2, JTable jtable3, JTable jtable4) {
+
+	Lexer(String text, JTable jtable1, JTable jtable2, JTable jtable3, JTable jtable4) {
 		this.text = text;
 		this.jtable1 = jtable1;
 		this.jtable2 = jtable2;
@@ -29,24 +27,19 @@ public class Lexical {
 	}
 
     // 标识符HashMap
-	public static Map<String, Integer> symbol = new HashMap<String, Integer>();
+    private Map<String, Integer> symbol = new HashMap<String, Integer>();
 
     // 常量表HashMap
-	public static Map<String, Integer> constant = new HashMap<String, Integer>();
-	
-	/**
-	 * 核心函数
-	 * 根据已经构成的DFA状态转换表
-	 * 按行分析数据，识别相应信息
-	 */
-	public void lex() {
+    private Map<String, Integer> constant = new HashMap<String, Integer>();
+
+    void lex() {
 		String[] texts = text.split("\n");
 		symbol.clear();
 		constant.clear();
 		for(int m = 0; m < texts.length; m++) {
 			String str = texts[m];
-			if (str.equals(""))
-				continue;
+			if (str.equals("")) {
+            }
 			else {
 				char[] strline = str.toCharArray();
 				for(int i = 0; i < strline.length; i++) {
@@ -56,7 +49,7 @@ public class Lexical {
 					
 					String token = "";
                     // 识别关键字和标识符
-					if (util.isAlpha(ch)) {
+					if (Util.isAlpha(ch)) {
                         do {
                             token += ch;  
                             i++;  
@@ -64,12 +57,12 @@ public class Lexical {
                                 break;
                             }
                             ch = strline[i];  
-                        } while (util.isAlpha(ch) || util.isDigit(ch));
+                        } while (Util.isAlpha(ch) || Util.isDigit(ch));
                         i--;
                         // 识别关键字
-                        if (util.isKeyword(token)) {
+                        if (Util.isKeyword(token)) {
                             DefaultTableModel tableModel = (DefaultTableModel)jtable1.getModel();
-                            tableModel.addRow(new Object[] {m+1, token, "关键字", util.keywords_code.get(token)});
+                            tableModel.addRow(new Object[] {m+1, token, "关键字", Util.keywords_code.get(token)});
                             jtable1.invalidate();
                         }
                         // 识别标识符
@@ -88,7 +81,7 @@ public class Lexical {
 
 
                     // 识别无符号数
-					else if(util.isDigit(ch)) {
+					else if(Util.isDigit(ch)) {
 						int state = 2;
 						token += ch;
 						boolean flag = true;
@@ -97,7 +90,7 @@ public class Lexical {
                         while (i < strline.length && flag){
                             i++;
                             char ch1 = strline[i];
-                            boolean isDigit = util.isDigit(ch1);
+                            boolean isDigit = Util.isDigit(ch1);
                             switch (state){
                                 case 2:{
                                     if (isDigit){
@@ -171,6 +164,9 @@ public class Lexical {
                             }
                         }
 
+                        if (i < strline.length){
+                            i--;
+                        }
 
                         //最终识别
                         if (state == 7) {
@@ -184,9 +180,16 @@ public class Lexical {
                             jtable1.invalidate();
                         }
                         else if (state == 2){
-                            DefaultTableModel tableModel1 = (DefaultTableModel) jtable1.getModel();
-                            tableModel1.addRow(new Object[] {m+1, token, "整型常量", 2});
-                            jtable1.invalidate();
+                            if (i >= strline.length || Util.isDelimiter(""+strline[i+1]) || Util.isOperator(""+strline[i+1])){
+                                DefaultTableModel tableModel1 = (DefaultTableModel) jtable1.getModel();
+                                tableModel1.addRow(new Object[] {m+1, token, "整型常量", 2});
+                                jtable1.invalidate();
+                            } else {
+                                DefaultTableModel tableModel2 = (DefaultTableModel) jtable2.getModel();
+                                tableModel2.addRow(new Object[] {m+1, token, "语法错误"});
+                                jtable2.invalidate();
+                            }
+
                         } else {
                             while (ch != '\0' && ch != ',' && ch != ';' && ch != ' ') {
                                 token += ch;
@@ -196,7 +199,7 @@ public class Lexical {
                                 ch = strline[i];
                             }
                             DefaultTableModel tableModel2 = (DefaultTableModel) jtable2.getModel();
-                            tableModel2.addRow(new Object[] {m+1, token, "无符号数不合规范"});
+                            tableModel2.addRow(new Object[] {m+1, token, "语法错误"});
                             jtable2.invalidate();
                         }
 
@@ -374,10 +377,10 @@ public class Lexical {
 
 
                     // 运算符
-					else if (util.isOperator(String.valueOf(ch))) {
+					else if (Util.isOperator(String.valueOf(ch))) {
 						token += ch;
                         // 后面可以用一个"="
-                        if (util.isPlusEqu(ch)) {
+                        if (Util.isPlusEqu(ch)) {
                             i++;
                             if (i>=strline.length) 
                             	break;  
@@ -387,7 +390,7 @@ public class Lexical {
                             } else {
                                 i--;
                             }
-                        } else if (util.isPlusSame(ch)) {  // 后面可以用一个和自己一样的
+                        } else if (Util.isPlusSame(ch)) {  // 后面可以用一个和自己一样的
                             i++;
                             if (i < strline.length){
                                 char ch1 = strline[i];
@@ -400,15 +403,15 @@ public class Lexical {
                         }
 
                         DefaultTableModel tableModel1 = (DefaultTableModel) jtable1.getModel();
-                        tableModel1.addRow(new Object[] {m+1, token, "运算符", util.operator_code.get(token)});
+                        tableModel1.addRow(new Object[] {m+1, token, "运算符", Util.operator_code.get(token)});
                         jtable1.invalidate();
                     }
 
                     //界符
-                    else if (util.isDelimiter(String.valueOf(ch))){
+                    else if (Util.isDelimiter(String.valueOf(ch))){
 					    token += ch;
 					    DefaultTableModel tableModel1 = (DefaultTableModel) jtable1.getModel();
-					    tableModel1.addRow(new Object[] {m+1, token, "界符", util.delimiter_code.get(token)});
+					    tableModel1.addRow(new Object[] {m+1, token, "界符", Util.delimiter_code.get(token)});
 					    jtable1.invalidate();
                     }
 
@@ -416,7 +419,7 @@ public class Lexical {
 					else {
                         if(ch != '\t' && ch != '\0' && ch != '\n' && ch != '\r') {
                         	DefaultTableModel tableModel2 = (DefaultTableModel) jtable2.getModel();
-                            tableModel2.addRow(new Object[] {m+1, token, "存在不合法字符"});
+                            tableModel2.addRow(new Object[] {m+1, token, "字符不合法"});
                             jtable2.invalidate();
                             System.out.println(ch);
                         }  

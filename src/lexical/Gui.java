@@ -24,10 +24,7 @@ public class Gui extends JFrame {
 		getContentPane().setFont(new Font("意大利斜体", Font.ITALIC, 25));
 		
 		setTitle("词法分析GUI");    //设置显示窗口标题
-		
 
-
-		
 		setSize(1200,900);    //设置窗口显示尺寸
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);    //置窗口是否可以关闭
 		getContentPane().setLayout(null);
@@ -40,7 +37,7 @@ public class Gui extends JFrame {
 		JTextArea textArea = new JTextArea();
 		textArea.setFont(new Font("Times New Roman", Font.ITALIC, 17));
 		scrollPane1.setViewportView(textArea);
-		scrollPane1.setRowHeaderView(new LineNumber());
+		scrollPane1.setRowHeaderView(new ShowStyle());
 			
 		JScrollPane scrollPane2 = new JScrollPane();
 		scrollPane2.setToolTipText("");
@@ -116,12 +113,11 @@ public class Gui extends JFrame {
 				DefaultTableModel model4 = new DefaultTableModel(new Object[][]{},name4);
 				table4.setModel(model4);
 
-				Lexical text_lex = new Lexical(textArea.getText(), table1, table2, table3, table4);
+				Lexer text_lex = new Lexer(textArea.getText(), table1, table2, table3, table4);
 				text_lex.lex();
 				
 				if (table1.getRowCount() == 0 && table2.getRowCount() == 0 
-						&& table3.getRowCount() == 0 && table4.getRowCount() == 0)
-				{
+						&& table3.getRowCount() == 0 && table4.getRowCount() == 0) {
 					JOptionPane.showMessageDialog(null, "没有可分析的程序", "Warning", JOptionPane.DEFAULT_OPTION);
 				}
 			
@@ -134,23 +130,19 @@ public class Gui extends JFrame {
 
 
         JButton button1 = new JButton("导入文件");
-        button1.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent arg0)
-            {
+        button1.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
                 String file_name;
                 JFileChooser file_open_filechooser = new JFileChooser();
                 file_open_filechooser.setCurrentDirectory(new File("."));
                 file_open_filechooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
                 int result = file_open_filechooser.showOpenDialog(scrollPane1);
 
-                if (result == JFileChooser.APPROVE_OPTION) // 证明有选择
-                {
+                if (result == JFileChooser.APPROVE_OPTION) {
                     file_name = file_open_filechooser.getSelectedFile().getPath();
                     // 读取文件，写到JTextArea里面
                     File file = new File(file_name);
-                    try
-                    {
+                    try {
                         textArea.setText("");
                         InputStream in = new FileInputStream(file);
                         int tempbyte;
@@ -160,8 +152,7 @@ public class Gui extends JFrame {
                         }
                         in.close();
                     }
-                    catch(Exception event)
-                    {
+                    catch(Exception event) {
                         event.printStackTrace();
                     }
                 }
