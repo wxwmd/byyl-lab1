@@ -1,3 +1,8 @@
+int a=1;
+int b=1;
+int b=2;
+int c=3;
+
 while(num != 100)
 {
     num++;
@@ -13,7 +18,7 @@ s[1] = 'a';
 char s = 'a';
 char s = '\t';
 char s = '\'';
-String t = "ZhangZhilu";
+String t = "wxw";
 /*wxw
 1170500704
 */

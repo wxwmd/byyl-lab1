@@ -28,10 +28,10 @@ public class Lexical {
 		this.jtable4 = jtable4;
 	}
 
-	public static int symbol_pos = 0;  // 记录符号表位置
+
 	public static Map<String, Integer> symbol = new HashMap<String, Integer>();  // 符号表HashMap
 	
-	public static int constant_pos = 0;  // 记录常量位置
+
 	public static Map<String, Integer> constant = new HashMap<String, Integer>();  // 常量表HashMap
 	
 	/**
@@ -42,9 +42,7 @@ public class Lexical {
 	public void lex() {
 		String[] texts = text.split("\n");
 		symbol.clear();
-		symbol_pos = 0;
 		constant.clear();
-		constant_pos = 0;
 		for(int m = 0; m < texts.length; m++) {
 			String str = texts[m];
 			if (str.equals(""))
@@ -75,12 +73,11 @@ public class Lexical {
                         }
                         // 识别标识符
                         else {
-                        	if (symbol.isEmpty() || !symbol.containsKey(token)) {
-                                symbol.put(token, symbol_pos);   
+                        	if (!symbol.containsKey(token)) {
+                                symbol.put(token, m+1);
                                 DefaultTableModel tableModel3 = (DefaultTableModel) jtable3.getModel();
-                                tableModel3.addRow(new Object[] {token, symbol_pos});
+                                tableModel3.addRow(new Object[] {token, m+1});
                                 jtable3.invalidate();
-                                symbol_pos++;
                             }
                         	DefaultTableModel tableModel1 = (DefaultTableModel) jtable1.getModel();
                             tableModel1.addRow(new Object[] {m+1, token, "标识符", 1});
@@ -155,11 +152,10 @@ public class Lexical {
                         {  
                         	if (constant.isEmpty() || (!constant.isEmpty() && !constant.containsKey(token))) 
                         	{  
-                        		constant.put(token, constant_pos);   
+                        		constant.put(token, m + 1);
                                 DefaultTableModel tableModel4 = (DefaultTableModel) jtable4.getModel();
-                                tableModel4.addRow(new Object[] {token, constant_pos});
+                                tableModel4.addRow(new Object[] {token, m + 1});
                                 jtable4.invalidate();
-                                constant_pos++;
                             }
                         	if (isSci_not)
                         	{  
@@ -232,11 +228,10 @@ public class Lexical {
                         }
                         else {
                         	if (!constant.containsKey(token)) {
-                        		constant.put(token, constant_pos);   
+                        		constant.put(token, m + 1);
                                 DefaultTableModel tableModel4 = (DefaultTableModel) jtable4.getModel();
-                                tableModel4.addRow(new Object[] {token, constant_pos});
+                                tableModel4.addRow(new Object[] {token, m + 1});
                                 jtable4.invalidate();
-                                constant_pos++;
                             }
                         	DefaultTableModel tableModel1 = (DefaultTableModel) jtable1.getModel();
                             tableModel1.addRow(new Object[] {m+1, token, "字符常量", 5});
@@ -248,65 +243,40 @@ public class Lexical {
                     // 识别字符串常量
 					else if (ch == '"') {
 						Boolean haveMistake = false;
-						String str1 = "";  
-						str1 += ch;  
+						token += ch;
 
-                        int state = 0;  
-                        
-						
-                        while (state != 3) 
-                        {  
-                            i++;                             
-                            if (i>=strline.length-1) 
-                            {  
-                                haveMistake = true;  
-                                break;  
-                            }                              
-                            ch = strline[i]; 
-                            if (ch == '\0') 
-                            {  
-                                haveMistake = true;  
-                                break;  
+                        int state = 0;
+                        while (state != 2){
+                            i++;
+                            if (i >= strline.length){
+                                haveMistake = true;
+                                break;
                             }
-                            for (int k = 0; k < 4; k++) 
-                            {  
-                                char tmpstr[] = util.stringDFA[state].toCharArray();  
-                                if (util.is_string_state(ch, tmpstr[k])) 
-                                {  
-                                	str1 += ch;  
-                                    if (k == 2 && state == 1)  // 转义字符  
-                                    {  
-                                        if (util.isEsSt(ch))
-                                            token = token + '\\' + ch;  
-                                        else  
-                                            token += ch;  
-                                    } 
-                                    else if (k != 3 && k != 1)  
-                                        token += ch;  
-                                    state = k;  
-                                    break;  
-                                }  
-                            }  
+                            char ch1 = strline[i];
+                            token += ch1;
+                            if (ch1 == '"'){
+                                state = 2;
+                                break;
+                            } else {
+                                state = 1;
+                            }
                         }
-                        if (haveMistake) 
-                        {   
+
+                        if (haveMistake) {
                         	DefaultTableModel tableModel2 = (DefaultTableModel) jtable2.getModel();
-                            tableModel2.addRow(new Object[] {m+1, str1, "字符串常量引号未封闭"});
+                            tableModel2.addRow(new Object[] {m+1, token, "字符串常量出错"});
                             jtable2.invalidate();  
                             i--;  
                         } 
-                        else 
-                        {  
-                        	if (constant.isEmpty() || (!constant.isEmpty() && !constant.containsKey(token))) 
-                        	{  
-                        		constant.put(token, constant_pos);   
+                        else {
+                        	if (!constant.containsKey(token)) {
+                        		constant.put(token, m + 1);
                                 DefaultTableModel tableModel4 = (DefaultTableModel) jtable4.getModel();
-                                tableModel4.addRow(new Object[] {str1, constant_pos});
+                                tableModel4.addRow(new Object[] {token, m + 1});
                                 jtable4.invalidate();
-                                constant_pos++;
                             }
                         	DefaultTableModel tableModel1 = (DefaultTableModel) jtable1.getModel();
-                            tableModel1.addRow(new Object[] {m+1, str1, "字符串常量", 6});
+                            tableModel1.addRow(new Object[] {m+1, token, "字符串常量", 6});
                             jtable1.invalidate();  
                         }
                     }
