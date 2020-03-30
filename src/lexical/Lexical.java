@@ -28,11 +28,11 @@ public class Lexical {
 		this.jtable4 = jtable4;
 	}
 
+    // 标识符HashMap
+	public static Map<String, Integer> symbol = new HashMap<String, Integer>();
 
-	public static Map<String, Integer> symbol = new HashMap<String, Integer>();  // 符号表HashMap
-	
-
-	public static Map<String, Integer> constant = new HashMap<String, Integer>();  // 常量表HashMap
+    // 常量表HashMap
+	public static Map<String, Integer> constant = new HashMap<String, Integer>();
 	
 	/**
 	 * 核心函数
@@ -60,10 +60,11 @@ public class Lexical {
                         do {
                             token += ch;  
                             i++;  
-                            if(i >= strline.length) 
-                            	break;  
+                            if(i >= strline.length){
+                                break;
+                            }
                             ch = strline[i];  
-                        } while (ch != '\0' && (util.isAlpha(ch) || util.isDigit(ch)));  
+                        } while (util.isAlpha(ch) || util.isDigit(ch));
                         i--;
                         // 识别关键字
                         if (util.isKeyword(token)) {
@@ -85,99 +86,126 @@ public class Lexical {
                         }
                     }
 
+
                     // 识别无符号数
 					else if(util.isDigit(ch)) {
-						int state = 1;
-						int k;
-                        Boolean isfloat = false;  
-                        Boolean isSci_not = false;  
-                        while ( (ch != '\0') && (util.isDigit(ch) || ch == '.' || ch == 'e' 
-                        		|| ch == '-' || ch == 'E' || ch == '+'))
-                        {
-                        	if (ch == '.') 
-                        		isfloat = true;
-                        	if (ch == 'e' || ch == 'E')  
-                        	{
-                        		isfloat = false;
-                        		isSci_not = true;
-                        	}
-                        	
-                            for (k = 0; k <= 6; k++) 
-                            {                             	
-                                char tmpstr[] = util.digitDFA[state].toCharArray();  
-                                if (ch != '#' && util.is_digit_state(ch, tmpstr[k]) == 1) 
-                                {  
-                                    token += ch;  
-                                    state = k;  
-                                    break;  
-                                }  
-                            }
-                            if (k > 6) 
-                            	break;
+						int state = 2;
+						token += ch;
+						boolean flag = true;
+
+						//dfa状态转化
+                        while (i < strline.length && flag){
                             i++;
-                            if (i >= strline.length) 
-                            	break;  
-                            ch = strline[i];
+                            char ch1 = strline[i];
+                            boolean isDigit = util.isDigit(ch1);
+                            switch (state){
+                                case 2:{
+                                    if (isDigit){
+                                        state = 2;
+                                        token += ch1;
+                                    } else if (ch1 == 'e'){
+                                        state = 5;
+                                        token += ch1;
+                                    } else if (ch1 == '.'){
+                                        state = 3;
+                                        token += ch1;
+                                    } else {
+                                        flag = false;
+                                    }
+                                    break;
+                                }
+                                case 3:{
+                                    if (isDigit){
+                                        state = 4;
+                                        token += ch1;
+                                    } else {
+                                        flag = false;
+                                    }
+                                    break;
+                                }
+                                case 4:{
+                                    if (isDigit){
+                                        state = 4;
+                                        token += ch1;
+                                    } else if (ch1 == 'e'){
+                                        state = 5;
+                                        token += ch1;
+                                    } else {
+                                        flag = false;
+                                    }
+                                    break;
+                                }
+                                case 5:{
+                                    if(isDigit){
+                                        state = 7;
+                                        token += ch1;
+                                    } else if (ch1 == '+' || ch1 == '-'){
+                                        state = 6;
+                                        token += ch1;
+                                    } else {
+                                        flag = false;
+                                    }
+                                    break;
+                                }
+                                case 6:{
+                                    if(isDigit){
+                                        state = 7;
+                                        token += ch1;
+                                    } else {
+                                        flag = false;
+                                    }
+                                    break;
+                                }
+                                case 7:{
+                                    if (isDigit){
+                                        state = 7;
+                                        token += ch1;
+                                    } else {
+                                        flag = false;
+                                    }
+                                    break;
+                                }
+                                default:{
+                                    break;
+                                }
+                            }
                         }
-                        
-                        Boolean haveMistake = false;  
-                        
-                        if (state == 2 || state == 4 || state == 5)  // 非终态
-                        {  
-                            haveMistake = true;  
-                        }                     
-                        else  // 无符号数后面紧跟的符号错误
-                        {  
-                            if ((ch == '.') || (!util.isOperator(String.valueOf(ch)) 
-                            		&& !util.isDigit(ch) && !util.isDelimiter(String.valueOf(ch))
-                            		&& ch != ' ')) 
-                                haveMistake = true;  
-                        }  
-                                            
-                        if (haveMistake)   // 错误处理 
-                        {  
-                        	while (ch != '\0' && ch != ',' && ch != ';' && ch != ' ')
-                            {  
-                                token += ch;  
+
+
+                        //最终识别
+                        if (state == 7) {
+                            DefaultTableModel tableModel1 = (DefaultTableModel) jtable1.getModel();
+                            tableModel1.addRow(new Object[] {m+1, token, "科学计数法", 4});
+                            jtable1.invalidate();
+                        }
+                        else if (state == 4) {
+                            DefaultTableModel tableModel1 = (DefaultTableModel) jtable1.getModel();
+                            tableModel1.addRow(new Object[] {m+1, token, "浮点型常量", 3});
+                            jtable1.invalidate();
+                        }
+                        else if (state == 2){
+                            DefaultTableModel tableModel1 = (DefaultTableModel) jtable1.getModel();
+                            tableModel1.addRow(new Object[] {m+1, token, "整型常量", 2});
+                            jtable1.invalidate();
+                        } else {
+                            while (ch != '\0' && ch != ',' && ch != ';' && ch != ' ') {
+                                token += ch;
                                 i++;
-                                if (i >= strline.length) 
-                                	break;  
-                                ch = strline[i];  
-                            }  
-                        	DefaultTableModel tableModel2 = (DefaultTableModel) jtable2.getModel();
+                                if (i >= strline.length)
+                                    break;
+                                ch = strline[i];
+                            }
+                            DefaultTableModel tableModel2 = (DefaultTableModel) jtable2.getModel();
                             tableModel2.addRow(new Object[] {m+1, token, "无符号数不合规范"});
                             jtable2.invalidate();
                         }
-                        else 
-                        {  
-                        	if (constant.isEmpty() || (!constant.isEmpty() && !constant.containsKey(token))) 
-                        	{  
-                        		constant.put(token, m + 1);
-                                DefaultTableModel tableModel4 = (DefaultTableModel) jtable4.getModel();
-                                tableModel4.addRow(new Object[] {token, m + 1});
-                                jtable4.invalidate();
-                            }
-                        	if (isSci_not)
-                        	{  
-                            	DefaultTableModel tableModel1 = (DefaultTableModel) jtable1.getModel();
-                                tableModel1.addRow(new Object[] {m+1, token, "科学计数法", 4});
-                                jtable1.invalidate();    
-                            } 
-                        	else if (isfloat) 
-                            {  
-                            	DefaultTableModel tableModel1 = (DefaultTableModel) jtable1.getModel();
-                                tableModel1.addRow(new Object[] {m+1, token, "浮点型常量", 3});
-                                jtable1.invalidate();    
-                            } 
-                            else
-                            {   
-                            	DefaultTableModel tableModel1 = (DefaultTableModel) jtable1.getModel();
-                                tableModel1.addRow(new Object[] {m+1, token, "整型常量", 2});
-                                jtable1.invalidate();   
-                            }  
+
+                        if ((state == 2 || state == 4 || state == 7)&&(!constant.containsKey(token))){
+                            constant.put(token, m + 1);
+                            DefaultTableModel tableModel4 = (DefaultTableModel) jtable4.getModel();
+                            tableModel4.addRow(new Object[] {token, m + 1});
+                            jtable4.invalidate();
                         }
-                        i--;
-                        token = "";
                     }
 
                     // 识别字符常量

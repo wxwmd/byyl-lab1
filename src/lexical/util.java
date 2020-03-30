@@ -1,8 +1,6 @@
 package lexical;
 
-import java.util.Dictionary;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
 
 public class util {
@@ -24,7 +22,7 @@ public class util {
 		}
 	};
 
-	public static Boolean isKeyword(String s) {
+	public static boolean isKeyword(String s) {
         return keywords_code.containsKey(s);  
     }
 	
@@ -33,6 +31,7 @@ public class util {
     		"<", "<=", ">", ">=", "==", "!=","=",
     		"&&", "||", "!","~", "&", "|", "^", ">>", "<<", 
     		"+=", "-=", "*=", "/=", "%=", "&=", "^=", "|=", "<<=", ">>="};
+
 	public static Map<String, Integer> operator_code = new HashMap<String, Integer>() {
 		private static final long serialVersionUID=1L;
 		{
@@ -42,7 +41,8 @@ public class util {
 			}
 		}	
 	};
-	public static Boolean isOperator(String s) {
+
+	public static boolean isOperator(String s) {
 		return operator_code.containsKey(s);
     }
 	 
@@ -57,7 +57,7 @@ public class util {
 			}
 		}	
 	};
-	public static Boolean isDelimiter(String s) {
+	public static boolean isDelimiter(String s) {
 		return delimiter_code.containsKey(s);
     }
 	
@@ -68,78 +68,27 @@ public class util {
 	}
 
 	// 这些符号后面可跟运算符"="
-	public static Boolean isPlusEqu(char ch) {
+	public static boolean isPlusEqu(char ch) {
         return ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '=' || ch == '>' 
         		|| ch == '<' || ch == '&' || ch == '|'  || ch == '^' || ch == '%' || ch == '!';
     }
 
 	// 这些符号后面可再跟相同运算符
-	public static Boolean isPlusSame(char ch) {
+	public static boolean isPlusSame(char ch) {
         return ch == '+' || ch == '-' || ch == '&' || ch == '|' || ch == '>' || ch == '<';  
     }
 	
-	public static Boolean isAlpha(char ch) {
+	public static boolean isAlpha(char ch) {
 	    return ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || ch == '_');
 	}
 
-	public static Boolean isDigit(char ch) {
+	public static boolean isDigit(char ch) {
         return (ch >= '0' && ch <= '9');  
     }
 
-
-	public static Boolean isEsSt(char ch)
-	{  
+	public static boolean isEsSt(char ch) {
         return ch == 'a' || ch == 'b' || ch == 'f' || ch == 'n' || ch == 'r'  
                 || ch == 't' || ch == 'v' || ch == '?' || ch == '0';  
-    }
-	
-    // 无符号数DFA
-	public static String digitDFA[] = 
-	{
-	    "#d#####",
-		"#d.#e##", 
-		"###d###", 
-	    "###de##", 
-	    "#####-d", 
-		"######d", 
-		"######d"
-	};
-	/**
-	 * 数字DFA状态匹配函数
-	 * @param ch 当前字符
-	 * @param test 状态表中的字符
-	 * @return 匹配成功返回true，否则返回false 
-	 */
-	public static int is_digit_state(char ch, char test) 
-	{  
-        if (test == 'd') 
-        {  
-            if (isDigit(ch))  
-                return 1;  
-            else  
-                return 0;  
-        }  
-        else if (test == '-')
-        {
-        	if (ch == '-' || ch == '+')
-        		return 1;
-        	else
-        		return 0;
-        }
-        else if (test == 'e')
-        {
-        	if (ch == 'e' || ch == 'E')
-        		return 1;
-        	else
-        		return 0;
-        }
-        else
-        {
-        	if (ch == test)
-        		return 1;
-        	else
-        		return 0;
-        }
     }
 
 
