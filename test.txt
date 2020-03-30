@@ -15,7 +15,6 @@ this is ×¢ÊÍ
 
 
 /*test*/
-//test
 float a = 1.22;
 float b = 2.32e+1;
 float c = 22.3E-1;

@@ -343,48 +343,45 @@ public class Lexical {
                             jtable1.invalidate();
                         }
                     }
-					
-					else if (util.isOperator(String.valueOf(ch)) || util.isDelimiter(String.valueOf(ch)))  // 运算符和界符
-                    {  
-						token += ch; 						
-                        if (util.isPlusEqu(ch))  // 后面可以用一个"="
-                        {  
+
+
+                    // 运算符
+					else if (util.isOperator(String.valueOf(ch))) {
+						token += ch;
+                        // 后面可以用一个"="
+                        if (util.isPlusEqu(ch)) {
                             i++;
                             if (i>=strline.length) 
                             	break;  
                             ch = strline[i];  
-                            if (ch == '=')  
-                                token += ch;  
-                            else 
-                            {                              	
-                            	if (util.isPlusSame(strline[i-1]) && ch == strline[i-1])  // 后面可以用一个和自己一样的
-                                    token += ch;  
-                                else  
-                                    i--;   
-                            }  
-                        }                  
-                        if(token.length() == 1)  //判断是否为界符
-                        {
-                            if(util.isDelimiter(token))
-                        	{
-                        		DefaultTableModel tableModel1 = (DefaultTableModel) jtable1.getModel();
-                                tableModel1.addRow(new Object[] {m+1, token, "界符", util.delimiter_code.get(token)});
-                                jtable1.invalidate();
-                        	}                        
-                        	else
-                        	{
-                        		DefaultTableModel tableModel1 = (DefaultTableModel) jtable1.getModel();
-                                tableModel1.addRow(new Object[] {m+1, token, "运算符", util.operator_code.get(token)});
-                                jtable1.invalidate();
-                        	}
+                            if (ch == '=') {
+                                token += ch;
+                            } else {
+                                i--;
+                            }
+                        } else if (util.isPlusSame(ch)) {  // 后面可以用一个和自己一样的
+                            i++;
+                            if (i < strline.length){
+                                char ch1 = strline[i];
+                                if (ch1 == ch){
+                                    token += ch1;
+                                } else{
+                                    i--;
+                                }
+                            }
                         }
-                        else
-                        {
-                        	DefaultTableModel tableModel1 = (DefaultTableModel) jtable1.getModel();
-                            tableModel1.addRow(new Object[] {m+1, token, "运算符", util.operator_code.get(token)});
-                            jtable1.invalidate();
-                        }                        
-                        token = "";		
+
+                        DefaultTableModel tableModel1 = (DefaultTableModel) jtable1.getModel();
+                        tableModel1.addRow(new Object[] {m+1, token, "运算符", util.operator_code.get(token)});
+                        jtable1.invalidate();
+                    }
+
+                    //界符
+                    else if (util.isDelimiter(String.valueOf(ch))){
+					    token += ch;
+					    DefaultTableModel tableModel1 = (DefaultTableModel) jtable1.getModel();
+					    tableModel1.addRow(new Object[] {m+1, token, "界符", util.delimiter_code.get(token)});
+					    jtable1.invalidate();
                     }
 
                     //不合法字符

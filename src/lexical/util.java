@@ -30,9 +30,9 @@ public class util {
 	
 	
     public static String operator[] = { "+", "-", "*", "/", "%", "++", "--",
-    		"<", "<=", ">", ">=", "==", "!=",
+    		"<", "<=", ">", ">=", "==", "!=","=",
     		"&&", "||", "!","~", "&", "|", "^", ">>", "<<", 
-    		"+=", "-=", "*=", "/=", "%=", "&=", " ^=", "|=", "<<=", ">>="};
+    		"+=", "-=", "*=", "/=", "%=", "&=", "^=", "|=", "<<=", ">>="};
 	public static Map<String, Integer> operator_code = new HashMap<String, Integer>() {
 		private static final long serialVersionUID=1L;
 		{
@@ -47,7 +47,7 @@ public class util {
     }
 	 
 	
-	public static String delimiter[] = { ",", ";", "[", "]", "{", "}", "(", ")","="};
+	public static String delimiter[] = { ",", ";", "[", "]", "{", "}", "(", ")"};
 	public static Map<String, Integer> delimiter_code = new HashMap<String, Integer>() {
 		private static final long serialVersionUID=1L;
 		{
@@ -70,7 +70,7 @@ public class util {
 	// 这些符号后面可跟运算符"="
 	public static Boolean isPlusEqu(char ch) {
         return ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '=' || ch == '>' 
-        		|| ch == '<' || ch == '&' || ch == '|'  || ch == '^' || ch == '%' || ch == '!' ;  
+        		|| ch == '<' || ch == '&' || ch == '|'  || ch == '^' || ch == '%' || ch == '!';
     }
 
 	// 这些符号后面可再跟相同运算符
