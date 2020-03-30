@@ -280,108 +280,69 @@ public class Lexical {
                             jtable1.invalidate();  
                         }
                     }
-					
-					
-					else if (ch == '/')  //  识别注释//
-					{
+
+                    // 识别/**/型注释
+					else if (ch == '/') {
+					    int state = 2;
 						token += ch;  
                         i++;
                         if (i>=strline.length) 
                         	break;  
                         ch = strline[i];
-                        
-						//不是多行注释及单行注释
-                        if (ch != '*' && ch != '/')   
-                        {  
-                            if (ch == '=')  
-                                token += ch; // /=  
-                            else 
-                            {  
-                                i--; // 指针回退 // /  
-                            }  
-                            DefaultTableModel tableModel1 = (DefaultTableModel) jtable1.getModel();
-                            tableModel1.addRow(new Object[] {m+1, token, "运算符", util.operator_code.get(token)});
-                            jtable1.invalidate();    
-                            token = "";  
-                        }
-                        // 注释可能是‘//’也可能是‘/*’
-                        else 
-                        {
-                        	boolean haveMistake = false;
-                        	int State = 0;
-                        	if (ch == '*') 
-                        	{  
-                        		// ch == '*'
-                        		token += ch;  
-                                int state = 2;  
+                        boolean haveMistake = false;
+                        if (ch == '*') {
+                            token += ch;
+                            state = 3;
 
-                                while (state != 4) 
-                                {                                      
-                                    if (i == strline.length-1) 
-                                    {  
-                                    	token += '\n';  
-                                    	m++;
-                                    	if (m >= texts.length)
-                                    	{
-                                    		haveMistake = true;  
-                                            break;  
-                                    	}
-                                		str = texts[m];
-                                		if (str.equals(""))
-                                			continue;
-                                		else 
-                                		{
-                                			strline = str.toCharArray();
-                                			i=0;
-                                			ch = strline[i];
-                                		}
-                                    }  
-                                    else
-                                    {
-                                    	i++;
-	                                    ch = strline[i];
+                            //获取下一个字符
+                            while (state != 5) {
+                                if (i == strline.length-1) {
+                                    token += "\n ";
+                                    m++;
+                                    if (m >= texts.length) {
+                                        haveMistake = true;
+                                        break;
                                     }
-                               
-                                    for (int k = 2; k <= 4; k++) 
-                                    {  
-                                        char[] tmpstr = util.noteDFA[state].toCharArray();
-                                        if (util.is_note_state(ch, tmpstr[k], state)) 
-                                        {  
-                                            token += ch;  
-                                            state = k;  
-                                            break;  
-                                        }  
-                                    }  
+                                    str = texts[m];
+                                    if (str.equals("")){
+                                        continue;
+                                    }
+                                    else {
+                                        strline = str.toCharArray();
+                                        i=0;
+                                        ch = strline[i];
+                                    }
                                 }
-                                State = state;
+                                else {
+                                    i++;
+                                    ch = strline[i];
+                                }
+
+                                token += ch;
+
+                                if (ch == '*'){
+                                    state = 4;
+                                } else if(state == 4 && ch == '/'){
+                                    state = 5;
+                                } else if (state == 4 && ch != '/'){
+                                    state = 3;
+                                } else {
+                                    state = 3;
+                                }
                             }
-                        	else {
-                        		//单行注释读取所有字符
-                        		int index = str.lastIndexOf("//");  
-                                
-                                String tmpstr = str.substring(index);  
-                                int tmpint = tmpstr.length();  
-                                for(int k=0;k<tmpint;k++)                                     
-                                  i++;    
-                                token = tmpstr;
-                                State = 4;
-                        	}
-                        	if(haveMistake)
-                        	{
-                        		DefaultTableModel tableModel2 = (DefaultTableModel) jtable2.getModel();
-                                tableModel2.addRow(new Object[] {m+1, token, "注释未封闭"});
-                                jtable2.invalidate();  
-                                --i;
-                        	}
-                        	else
-                        	{
-                        		DefaultTableModel tableModel1 = (DefaultTableModel) jtable1.getModel();
-                                tableModel1.addRow(new Object[] {m+1, token, "注释", 7});
-                                jtable1.invalidate();
-                        	}
-                        	token = "";
-                        }	
-					}
+                        }
+                        if(haveMistake) {
+                            DefaultTableModel tableModel2 = (DefaultTableModel) jtable2.getModel();
+                            tableModel2.addRow(new Object[] {m+1, token, "注释未封闭"});
+                            jtable2.invalidate();
+                            --i;
+                        }
+                        else {
+                            DefaultTableModel tableModel1 = (DefaultTableModel) jtable1.getModel();
+                            tableModel1.addRow(new Object[] {m+1, token, "注释", 7});
+                            jtable1.invalidate();
+                        }
+                    }
 					
 					else if (util.isOperator(String.valueOf(ch)) || util.isDelimiter(String.valueOf(ch)))  // 运算符和界符
                     {  

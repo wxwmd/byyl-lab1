@@ -87,35 +87,7 @@ public class util {
     }
 
 
-	// String DFA : a代表任意字符，b代表除\和"之外的字符
-	public static String stringDFA[] = 
-	{ 
-		"#\\b#", 
-		"##a#", 
-		"#\\b\"", 
-		"####" 
-	};
-	
-	/**
-	 * 字符串DFA状态匹配函数
-	 * @param ch 当前字符
-	 * @param key 状态表中的字符
-	 * @return 匹配成功返回true，否则返回false 
-	 */
-	public static Boolean is_string_state(char ch, char key) 
-	{  
-        if (key == 'a')  
-            return true;  
-        if (key == '\\')  
-            return ch == key;  
-        if (key == '"')  
-            return ch == key;  
-        if (key == 'b')  
-            return ch != '\\' && ch != '"';  
-        return false;  
-    }
-
-    public static Boolean isEsSt(char ch)
+	public static Boolean isEsSt(char ch)
 	{  
         return ch == 'a' || ch == 'b' || ch == 'f' || ch == 'n' || ch == 'r'  
                 || ch == 't' || ch == 'v' || ch == '?' || ch == '0';  
@@ -169,43 +141,6 @@ public class util {
         		return 0;
         }
     }
-	
 
-	public static String noteDFA[] = 
-	{
-		"#####", 
-		"##*##", 
-		"##c*#", 
-		"##c*/", 
-		"#####" 
-	};
-	/**
-	 * 注释DFA状态匹配函数
-	 * @param ch 当前字符
-	 * @return 匹配成功返回true，否则返回false 
-	 */
-	public static Boolean is_note_state(char ch, char nD, int s) 
-	{  
-        if (s == 2) 
-        {  
-            if (nD == 'c') 
-            {  
-                if (ch != '*') 
-                	return true;  
-                else 
-                	return false;  
-            }  
-        }  
-        if (s == 3) 
-        {  
-            if (nD == 'c') 
-            {  
-                if (ch != '*' && ch != '/') 
-                	return true;  
-                else 
-                	return false;  
-            }  
-        }  
-        return (ch == nD) ? true : false;  
-    }
+
 }

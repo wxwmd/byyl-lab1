@@ -3,10 +3,16 @@ int b=1;
 int b=2;
 int c=3;
 
-while(num != 100)
-{
+while(num != 100){
     num++;
 }
+
+
+/*
+hello
+this is ×¢ÊÍ
+*/
+
 
 /*test*/
 //test
